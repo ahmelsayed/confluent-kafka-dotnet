@@ -55,7 +55,7 @@ namespace Confluent.Kafka.Impl
             Any = 0,
             CreateTopics = 1,
             DeleteTopics = 2,
-            CreatePartitions=  3,
+            CreatePartitions = 3,
             AlterConfigs = 4,
             DescribeConfigs = 5
         }
@@ -224,7 +224,7 @@ namespace Confluent.Kafka.Impl
             _event_topic_partition_list = (Func<IntPtr, IntPtr>)methods.Single(m => m.Name == "rd_kafka_event_topic_partition_list").CreateDelegate(typeof(Func<IntPtr, IntPtr>));
             _event_destroy = (Action<IntPtr>)methods.Single(m => m.Name == "rd_kafka_event_destroy").CreateDelegate(typeof(Action<IntPtr>));
             _queue_poll = (Func<IntPtr, IntPtr, IntPtr>)methods.Single(m => m.Name == "rd_kafka_queue_poll").CreateDelegate(typeof(Func<IntPtr, IntPtr, IntPtr>));
-            
+
             _AdminOptions_new = (Func<IntPtr, AdminOp, IntPtr>)methods.Single(m => m.Name == "rd_kafka_AdminOptions_new").CreateDelegate(typeof(Func<IntPtr, AdminOp, IntPtr>));
             _AdminOptions_destroy = (Action<IntPtr>)methods.Single(m => m.Name == "rd_kafka_AdminOptions_destroy").CreateDelegate(typeof(Action<IntPtr>));
             _AdminOptions_set_request_timeout = (Func<IntPtr, IntPtr, StringBuilder, UIntPtr, ErrorCode>)methods.Single(m => m.Name == "rd_kafka_AdminOptions_set_request_timeout").CreateDelegate(typeof(Func<IntPtr, IntPtr, StringBuilder, UIntPtr, ErrorCode>));
@@ -424,20 +424,18 @@ namespace Confluent.Kafka.Impl
                 {
                     if (userSpecifiedPath != null)
                     {
+                        // Clear any errors
+                        PosixNative.dlerror();
                         if (PosixNative.dlopen(userSpecifiedPath, RTLD_NOW) == IntPtr.Zero)
                         {
                             throw new InvalidOperationException($"Failed to load librdkafka at location '{userSpecifiedPath}'. dlerror: '{PosixNative.LastError}'.");
                         }
+                    }
 
-                        nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods));
-                    }
-                    else
-                    {
-                        nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods_Centos7));
-                        nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods));
-                        nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods_Debian9));
-                        nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods_Alpine));
-                    }
+                    nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods_Centos7));
+                    nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods));
+                    nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods_Debian9));
+                    nativeMethodTypes.Add(typeof(NativeMethods.NativeMethods_Alpine));
                 }
                 else
                 {
@@ -554,7 +552,7 @@ namespace Confluent.Kafka.Impl
             => _header_add(hdrs, keydata, keylen, valdata, vallen);
 
         internal delegate ErrorCode headerGetAllDelegate(
-            IntPtr hdrs, 
+            IntPtr hdrs,
             IntPtr idx,
             out IntPtr namep,
             out IntPtr valuep,
@@ -889,7 +887,7 @@ namespace Confluent.Kafka.Impl
 
         private static Action<IntPtr> _AdminOptions_destroy;
         internal static void AdminOptions_destroy(IntPtr options) => _AdminOptions_destroy(options);
-        
+
         private static Func<IntPtr, IntPtr, StringBuilder, UIntPtr, ErrorCode> _AdminOptions_set_request_timeout;
         internal static ErrorCode AdminOptions_set_request_timeout(
             IntPtr options,
@@ -1002,7 +1000,7 @@ namespace Confluent.Kafka.Impl
 
         private static Func<string, UIntPtr, StringBuilder, UIntPtr, IntPtr> _NewPartitions_new;
         internal static IntPtr NewPartitions_new(
-                string topic, 
+                string topic,
                 UIntPtr new_total_cnt,
                 StringBuilder errstr, UIntPtr errstr_size
                 ) => _NewPartitions_new(topic, new_total_cnt, errstr, errstr_size);
@@ -1047,7 +1045,7 @@ namespace Confluent.Kafka.Impl
                 IntPtr entry) => _ConfigEntry_name(entry);
 
         private static Func<IntPtr, IntPtr> _ConfigEntry_value;
-        internal static IntPtr ConfigEntry_value (
+        internal static IntPtr ConfigEntry_value(
                 IntPtr entry) => _ConfigEntry_value(entry);
 
         private static Func<IntPtr, ConfigSource> _ConfigEntry_source;
@@ -1067,7 +1065,7 @@ namespace Confluent.Kafka.Impl
                 IntPtr entry) => _ConfigEntry_is_sensitive(entry);
 
         private static Func<IntPtr, IntPtr> _ConfigEntry_is_synonym;
-        internal static IntPtr ConfigEntry_is_synonym (
+        internal static IntPtr ConfigEntry_is_synonym(
                 IntPtr entry) => _ConfigEntry_is_synonym(entry);
 
         private delegate IntPtr _ConfigEntry_synonyms_delegate(IntPtr entry, out UIntPtr cntp);
@@ -1092,13 +1090,13 @@ namespace Confluent.Kafka.Impl
         private static Func<IntPtr, string, string, ErrorCode> _ConfigResource_add_config;
         internal static ErrorCode ConfigResource_add_config(
                 IntPtr config,
-                string name, 
+                string name,
                 string value) => _ConfigResource_add_config(config, name, value);
 
         private static Func<IntPtr, string, string, ErrorCode> _ConfigResource_set_config;
         internal static ErrorCode ConfigResource_set_config(
                 IntPtr config,
-                string name, 
+                string name,
                 string value) => _ConfigResource_set_config(config, name, value);
 
         private static Func<IntPtr, string, ErrorCode> _ConfigResource_delete_config;
@@ -1128,10 +1126,10 @@ namespace Confluent.Kafka.Impl
         private static Func<IntPtr, IntPtr> _ConfigResource_error_string;
         internal static IntPtr ConfigResource_error_string(
                 IntPtr config) => _ConfigResource_error_string(config);
-        
+
 
         private static Action<IntPtr, IntPtr[], UIntPtr, IntPtr, IntPtr> _AlterConfigs;
-        internal static void AlterConfigs (
+        internal static void AlterConfigs(
                 IntPtr rk,
                 IntPtr[] configs,
                 UIntPtr config_cnt,
@@ -1145,7 +1143,7 @@ namespace Confluent.Kafka.Impl
                 out UIntPtr cntp) => _AlterConfigs_result_resources(result, out cntp);
 
         private static Action<IntPtr, IntPtr[], UIntPtr, IntPtr, IntPtr> _DescribeConfigs;
-        internal static void DescribeConfigs (
+        internal static void DescribeConfigs(
                 IntPtr rk,
                 IntPtr[] configs,
                 UIntPtr config_cnt,
